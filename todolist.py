@@ -1,15 +1,62 @@
 #Create and store tasks
 #Update tasks and mark them as completed
 #Delete tasks
+import json 
 
-tasks = ["do this", "do that", "do those"]
+tasks = {"1": "do this", "2": "do that", "3": "do those"}
 
+with open('tasks.json', 'r') as file:
+    tasks = json.load(file)
+
+
+def save():
+    with open('tasks.json', 'w') as file:
+        json.dump(tasks, file, sort_keys=True, indent=4)
+
+
+def updateTasks(task): 
+
+    for slot in tasks:
+        if tasks[slot] == None:
+            tasks[slot] = task
+            return
+        else:
+            n = str(len(tasks) + 1)
+
+            if n in tasks.keys():
+                n = int(n)
+                n += 1
+                n = str(n)
+            tasks.update({n: task})
+            return
+
+def deleteTask(task):
+
+    for slot in tasks: 
+        
+        if tasks[slot] == task:
+            tasks.pop(slot)
+            return
+
+def clear():
+
+    print("\033[H\033[J", end="")
+
+clear()
 start = input("Open list? [y] ")
+
+
 
 while start == "y" or "Y":
 
+    clear()
+
+
     print("................................................................")
-    print(f"Tasks: {tasks}")
+
+    b = str(tasks.values())
+    print(f"Tasks: {b[11:]}")
+
     print("................................................................")
     print("[c] create a task, [x] delete a task, [e] edit task, [q] quit")
     choice = input()
@@ -19,24 +66,34 @@ while start == "y" or "Y":
         case "c" | "C":
             print("................................................................")
             newTask = input("Create task: ")
-            tasks.append(newTask)
+            updateTasks(newTask)
+
+            save()
+
             start = "y"
         case "x" | "X":
             print("................................................................")
             removeTask = input("Delete task: ")
-            if removeTask in tasks:
-                tasks.remove(removeTask)
+            if removeTask in tasks.values():
+                deleteTask(removeTask)
+
+            save()
+
             start = "y"
         case "e" | "E":
             print("................................................................")
             updateTask = input("Update which task: ")
-            if updateTask in tasks:
-                tasks.remove(updateTask)
+            if updateTask in tasks.values():
+                deleteTask(updateTask)
                 updateTask = input("Update to: ")
-                tasks.append(updateTask)
+                updateTasks(updateTask)
+
             else:
-                print("Task not found")
+                print("Task not found") 
                 start = "y"
+
+            save()
+
         case "q" | "Q":
             exit()
     
